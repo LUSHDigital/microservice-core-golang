@@ -1,4 +1,4 @@
-// Pckage format defines any necessary custom formatters for the responses
+// Package format defines any necessary custom formatters for the responses
 // presently only JSON is supported.
 package format
 
