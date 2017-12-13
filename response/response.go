@@ -105,6 +105,12 @@ func NotFoundErr(msg string) *Response {
 	return New(http.StatusNotFound, msg, nil)
 }
 
+// ConflictErr returns a prepared 409 Conflict response, including the message passed by the user
+// in the message field of the response object.
+func ConflictErr(msg string) *Response {
+	return New(http.StatusConflict, msg, nil)
+}
+
 // InternalError returns a prepared 500 Internal Server Error, including the error
 // message in the message field of the response object
 func InternalError(err error) *Response {
