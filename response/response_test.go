@@ -464,7 +464,7 @@ func TestSQLError(t *testing.T) {
 			want: New(http.StatusInternalServerError, "db error: some error", nil),
 		},
 		{
-			name:   "internal error with format",
+			name:   "internal error errorf",
 			format: "oh noes: %v",
 			err:    errors.New("some error"),
 			want:   New(http.StatusInternalServerError, "oh noes: some error", nil),
@@ -472,7 +472,14 @@ func TestSQLError(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SQLError(tt.format, tt.err); !reflect.DeepEqual(got, tt.want) {
+			var got *Response
+			if tt.format != "" {
+				got = SQLErrorf(tt.format, tt.err)
+			} else {
+				got = SQLError(tt.err)
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("SQLError() = %v, want %v", got, tt.want)
 			}
 		})

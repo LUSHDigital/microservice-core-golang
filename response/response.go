@@ -67,7 +67,12 @@ func New(code int, message string, data *Data) *Response {
 
 // SQLError returns a prepared 204 No Content response if the error passed is of type sql.ErrNoRows,
 // otherwise, returns a 500 Internal Server Error prepared response.
-func SQLError(format string, err error) *Response {
+func SQLError(err error) *Response {
+	return SQLErrorf("", err)
+}
+
+// SQLErrorf allows a custom error message to be passed to the SQLError function.
+func SQLErrorf(format string, err error) *Response {
 	if err == sql.ErrNoRows {
 		return New(http.StatusNoContent, "no data found", nil)
 	}
