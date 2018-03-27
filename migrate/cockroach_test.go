@@ -35,8 +35,6 @@ func TestCockroach_HasMigrationsInPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Cockroach{}
-
 			// Path setup for passing tests
 			if tt.path == "{CALCULATED}" {
 				var (
@@ -49,10 +47,10 @@ func TestCockroach_HasMigrationsInPath(t *testing.T) {
 				assert.Nil(t, err)
 
 				// Update path
-				c.MigrationsPath = dir
+				tt.path = dir
 			}
 
-			assert.Equal(t, tt.expected, c.migrationsInPath())
+			assert.Equal(t, tt.expected, migrationsInPath(tt.path))
 		})
 	}
 }

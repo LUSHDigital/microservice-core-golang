@@ -111,7 +111,14 @@ func (co *CockroachOptions) ConnectionString() (string, error) {
 	return conn.String(), nil
 }
 
-func NewCockroach(opts *CockroachOptions) (*Cockroach, error) {
+// NewCockroach provides a Migrator to be used with CockroachDB.
+func NewCockroach(path string, opts *CockroachOptions) (*Cockroach, error) {
+	// Validate the migrations path
+	if !migrationsInPath(path) {
+		return nil, errors.New("migrate: no migration files in given path")
+	}
+
+	// Construct connection string from options/defaults
 	conn, err := opts.ConnectionString()
 	if err != nil {
 		return nil, err
@@ -122,17 +129,18 @@ func NewCockroach(opts *CockroachOptions) (*Cockroach, error) {
 		return nil, err
 	}
 
-	return &Cockroach{db: db}, nil
+	return &Cockroach{
+		db:             db,
+		MigrationsPath: path,
+	}, nil
 }
 
+// Migrate performs the migrations within the given migration directory for
+// CockroachDB.
 func (c *Cockroach) Migrate() error {
 	driver, err := cockroachdb.WithInstance(c.db, &cockroachdb.Config{})
 	if err != nil {
 		log.Fatalf("could not get migrations driver: %s", err)
-	}
-
-	if !c.migrationsInPath() {
-		return errors.New("migrate: no migration files exist in given path")
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
@@ -150,14 +158,14 @@ func (c *Cockroach) Migrate() error {
 
 // migrationsInPath will assert whether the configured migrations path has
 // migrations ready to be ran.
-func (c *Cockroach) migrationsInPath() bool {
+func migrationsInPath(path string) bool {
 	// Ensure we have a migration path
-	if len(c.MigrationsPath) == 0 {
+	if len(path) == 0 {
 		return false
 	}
 
 	// Pull all files up from the migrations path
-	files, err := ioutil.ReadDir(c.MigrationsPath)
+	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		return false
 	}
