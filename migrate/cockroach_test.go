@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	_ "github.com/lib/pq"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCockroach_HasMigrationsInPath(t *testing.T) {
@@ -43,14 +42,18 @@ func TestCockroach_HasMigrationsInPath(t *testing.T) {
 				)
 				defer os.RemoveAll(dir)
 
-				err := ioutil.WriteFile(file, nil, 0644)
-				assert.Nil(t, err)
+				if err := ioutil.WriteFile(file, nil, 0644); err != nil {
+					t.Fatal(err)
+				}
 
 				// Update path
 				tt.path = dir
 			}
 
-			assert.Equal(t, tt.expected, migrationsInPath(tt.path))
+			exists := migrationsInPath(tt.path)
+			if tt.expected != exists {
+				t.Errorf("Expected %s but got %d", tt.expected, exists)
+			}
 		})
 	}
 }
