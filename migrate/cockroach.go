@@ -12,8 +12,12 @@ import (
 
 	"github.com/mattes/migrate"
 	"github.com/mattes/migrate/database/cockroachdb"
+	// file is imported for its side-affect of loading migration files from
+	// disk when specifying the migrations directory
 	_ "github.com/mattes/migrate/source/file"
 
+	// pq is imported for its  side-affect of using postgresql:// the sql
+	// connection string
 	_ "github.com/lib/pq"
 )
 
