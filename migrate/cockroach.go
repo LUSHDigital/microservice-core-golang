@@ -7,13 +7,14 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
-
-	_ "github.com/lib/pq"
+	"strconv"
+	"strings"
 
 	"github.com/mattes/migrate"
 	"github.com/mattes/migrate/database/cockroachdb"
-	"strconv"
-	"strings"
+	_ "github.com/mattes/migrate/source/file"
+
+	_ "github.com/lib/pq"
 )
 
 type Cockroach struct {
@@ -36,9 +37,9 @@ type CockroachSSL struct {
 
 const (
 	DefaultHost           = "localhost"
-	DefaultUser           = "cockroach"
+	DefaultUser           = "root"
 	DefaultPort           = "26257"
-	DefaultDatabase       = "service-db"
+	DefaultDatabase       = "service"
 	DefaultMigrationTable = "schema_migrations"
 )
 
@@ -46,18 +47,17 @@ const (
 // applying defaults to options that were not set ready to be used in a
 // connection to the database
 func (co *CockroachOptions) ConnectionString() (string, error) {
-	var conn strings.Builder
-
-	conn.WriteString("cockroach://")
-
 	// Prevent panics and just return the exact default upon nil options
 	if co.ConnectionOptions == nil {
 		return fmt.Sprintf(
-			"cockroach://%s@%s:%s/%s?sslmode=disable&x-migrations-table=%s",
+			"postgresql://%s@%s:%s/%s?sslmode=disable&x-migrations-table=%s",
 			DefaultUser, DefaultHost, DefaultPort, DefaultDatabase, DefaultMigrationTable,
 		), nil
 	}
 
+	// Start a string builder for the connection string
+	var conn strings.Builder
+	conn.WriteString("postgresql://")
 	// User
 	if len(co.User) != 0 {
 		conn.WriteString(co.User)

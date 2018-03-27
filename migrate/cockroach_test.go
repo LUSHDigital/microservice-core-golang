@@ -68,7 +68,6 @@ func TestCockroachOptions_ConnectionString(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			"Passing - insecure options",
 			fields{
@@ -82,13 +81,14 @@ func TestCockroachOptions_ConnectionString(t *testing.T) {
 				false,
 				nil,
 			},
-			"cockroach://test-user@test-host:9001/test-database?sslmode=disable&x-migrations-table=migration_table",
+			"postgresql://test-user@test-host:9001/test-database?sslmode=disable&x-migrations-table=migration_table",
 			false,
 		},
 		{
 			"Passing - defaults",
 			fields{},
-			"cockroach://cockroach@localhost:26257/service-db?sslmode=disable&x-migrations-table=schema_migrations",
+			"postgresql://root@localhost:26257/service?sslmode" +
+				"=disable&x-migrations-table=schema_migrations",
 			false,
 		},
 	}
