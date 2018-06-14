@@ -363,27 +363,6 @@ func TestResponse_WriteTo(t *testing.T) {
 	}
 }
 
-func TestResponse_WriteTo204(t *testing.T) {
-	r := &Response{
-		Status:  "status",
-		Code:    http.StatusNoContent,
-		Message: "message",
-		Data:    &Data{Type: "type", Content: "content"},
-	}
-
-	w := httptest.NewRecorder()
-	if err := r.WriteTo(w); err != nil {
-		t.Fatalf("unexpected error writing to buffer: %v", err)
-	}
-
-	if w.Code != r.Code {
-		t.Errorf("exp: %v, got: %v", r.Code, w.Code)
-	}
-	if w.Body.String() != "" {
-		t.Errorf("exp: %q, got: %q", "", w.Body.String())
-	}
-}
-
 func BenchmarkData_MarshalJSON(b *testing.B) {
 	log.SetOutput(ioutil.Discard)
 	defer log.SetOutput(os.Stderr)
@@ -466,13 +445,13 @@ func TestDBError(t *testing.T) {
 		{
 			name: "internal error",
 			err:  errors.New("some error"),
-			want: New(http.StatusServiceUnavailable, "db error: some error", nil),
+			want: New(http.StatusInternalServerError, "db error: some error", nil),
 		},
 		{
 			name:   "internal error errorf",
 			format: "oh noes: %v",
 			err:    errors.New("some error"),
-			want:   New(http.StatusServiceUnavailable, "oh noes: some error", nil),
+			want:   New(http.StatusInternalServerError, "oh noes: some error", nil),
 		},
 	}
 	for _, tt := range tests {
