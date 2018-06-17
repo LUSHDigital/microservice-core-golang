@@ -129,6 +129,12 @@ func InternalError(err error) *Response {
 	return New(http.StatusInternalServerError, fmt.Sprintf("internal server error: %v", err), nil)
 }
 
+// MustWriteTo - passes to WriteTo but may panic
+// if the connection cannot be written to.
+func (r *Response) MustWriteTo(w http.ResponseWriter) {
+	panic(r.WriteTo(w))
+}
+
 // WriteTo - pick a response writer to write the default json response to.
 func (r *Response) WriteTo(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -200,6 +206,12 @@ func NewPaginated(paginator *pagination.Paginator, code int, message string, dat
 		Data:       data,
 		Pagination: paginator.PrepareResponse(),
 	}
+}
+
+// MustWriteTo - passes to WriteTo but may panic
+// if the connection cannot be written to.
+func (p *PaginatedResponse) MustWriteTo(w http.ResponseWriter) {
+	panic(p.WriteTo(w))
 }
 
 // WriteTo - pick a response writer to write the default json response to.
